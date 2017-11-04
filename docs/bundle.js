@@ -92,7 +92,13 @@ var _react = __webpack_require__("./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _chainedFunction = __webpack_require__("./node_modules/chained-function/lib/index.js");
+
+var _chainedFunction2 = _interopRequireDefault(_chainedFunction);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -126,7 +132,9 @@ var Checkbox = (_temp = _class = function (_PureComponent) {
         value: function render() {
             var _this2 = this;
 
-            var props = _extends({}, this.props);
+            var _props = this.props,
+                onChange = _props.onChange,
+                props = _objectWithoutProperties(_props, ['onChange']);
 
             delete props.indeterminate;
 
@@ -134,8 +142,21 @@ var Checkbox = (_temp = _class = function (_PureComponent) {
                 type: 'checkbox',
                 ref: function ref(el) {
                     _this2.el = el;
-                }
+                },
+                onChange: (0, _chainedFunction2.default)(function () {
+                    _this2.el.indeterminate = _this2.props.indeterminate;
+                }, onChange)
             }));
+        }
+    }, {
+        key: 'checked',
+        get: function get() {
+            return this.el.checked;
+        }
+    }, {
+        key: 'indeterminate',
+        get: function get() {
+            return this.el.indeterminate;
         }
     }]);
 
@@ -325,6 +346,7 @@ var Selectable = (_temp2 = _class = function (_PureComponent) {
                 rowKey: 'id',
                 columns: this.columns,
                 data: this.state.data,
+                useFixedHeader: true,
                 rowClassName: this.getRowClassName,
                 onRowClick: this.onRowClick,
                 maxHeight: 400
@@ -1221,6 +1243,57 @@ function getOption(options, name, defaultValue) {
     return value;
 }
 
+
+/***/ }),
+
+/***/ "./node_modules/chained-function/lib/chained-function.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    for (var _len = arguments.length, funcs = Array(_len), _key = 0; _key < _len; _key++) {
+        funcs[_key] = arguments[_key];
+    }
+
+    return funcs.filter(function (func) {
+        return typeof func === 'function';
+    }).reduce(function (accumulator, func) {
+        if (accumulator === null) {
+            return func;
+        }
+
+        return function chainedFunction() {
+            for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                args[_key2] = arguments[_key2];
+            }
+
+            accumulator.apply(this, args);
+            func.apply(this, args);
+        };
+    }, null);
+};
+
+/***/ }),
+
+/***/ "./node_modules/chained-function/lib/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _chainedFunction = __webpack_require__("./node_modules/chained-function/lib/chained-function.js");
+
+var _chainedFunction2 = _interopRequireDefault(_chainedFunction);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _chainedFunction2.default;
 
 /***/ }),
 
@@ -26306,28 +26379,32 @@ var Table = (_temp2 = _class = function (_PureComponent) {
                     }
                     for (i = 0; i < headerCells.length; i++) {
                         th = headerCells[i];
-                        widthList[i] = th.getBoundingClientRect().width;
+                        widthList[i] = 250;
                     }
                 }
                 return widthList;
             },
             getMainTableHeaderCellActualHeight: function getMainTableHeaderCellActualHeight() {
-                var tHeader = _this.mainTable.tableHeader.header;
-                var headerCells = _helper2.default.getSubElements(_helper2.default.getSubElements(tHeader, '.' + _index2.default.tr)[0], '.' + _index2.default.th);
-                var headerHeight = 0;
-                var th = void 0;
-                var thHeight = void 0;
-                var cellContent = void 0;
-                var content = void 0;
-                var i = 0;
-                for (i = 0; i < headerCells.length; i++) {
-                    th = headerCells[i];
-                    cellContent = _helper2.default.getSubElements(th, '.' + _index2.default.thContent);
-                    content = cellContent[0];
-                    thHeight = (content ? content.getBoundingClientRect().height : 0) + parseInt(_helper2.default.getElementStyle(th, 'padding-top'), 10) + parseInt(_helper2.default.getElementStyle(th, 'padding-bottom'), 10) + parseInt(_helper2.default.getElementStyle(th, 'border-top-width'), 10) + parseInt(_helper2.default.getElementStyle(th, 'border-bottom-width'), 10);
-                    headerHeight = Math.max(headerHeight, thHeight);
-                }
-                return headerHeight;
+                // const tHeader = this.mainTable.tableHeader.header;
+                // const headerCells = helper.getSubElements(helper.getSubElements(tHeader, `.${styles.tr}`)[0], `.${styles.th}`);
+                // let headerHeight = 0;
+                // let th;
+                // let thHeight;
+                // let cellContent;
+                // let content;
+                // let i = 0;
+                // for (i = 0; i < headerCells.length; i++) {
+                //     th = headerCells[i];
+                //     cellContent = helper.getSubElements(th, `.${styles.thContent}`);
+                //     content = cellContent[0];
+                //     thHeight = (content ? content.getBoundingClientRect().height : 0) +
+                //                 parseInt(helper.getElementStyle(th, 'padding-top'), 10) +
+                //                 parseInt(helper.getElementStyle(th, 'padding-bottom'), 10) +
+                //                 parseInt(helper.getElementStyle(th, 'border-top-width'), 10) +
+                //                 parseInt(helper.getElementStyle(th, 'border-bottom-width'), 10);
+                //     headerHeight = Math.max(headerHeight, thHeight);
+                // }
+                return 37;
             },
             getMainTableCellWidth: function getMainTableCellWidth() {
                 var _this$props = _this.props,
@@ -26339,9 +26416,9 @@ var Table = (_temp2 = _class = function (_PureComponent) {
                 var mainBody = _this.mainTable.tableBody;
                 var tBody = mainBody.body;
                 var bodyRows = _helper2.default.getSubElements(tBody, '.' + _index2.default.tr);
-                var tableMaxWidth = tBody.clientWidth;
+                var tableMaxWidth = 1000;
                 var thsWidth = getMainTableHeaderCellActualWidth();
-                var sumCellWidth = 0;
+                // let sumCellWidth = 0;
                 var cellsWidth = [];
                 var cellWidth = 0;
                 var customWidth = { width: 0 };
@@ -26378,10 +26455,10 @@ var Table = (_temp2 = _class = function (_PureComponent) {
                     var i = 0;
                     var j = 0;
                     var bodyCell = [];
-                    var customColumn = void 0;
+                    // let customColumn;
                     var td = void 0;
-                    var thWidth = void 0;
-                    var tdWidth = void 0;
+                    // let thWidth;
+                    // let tdWidth;
                     // For performance, do not clearing element style and getting element width at the same time.
                     for (i = 0; i < bodyRows.length; i++) {
                         bodyCell = _helper2.default.getSubElements(bodyRows[i], '.' + _index2.default.td);
@@ -26392,62 +26469,63 @@ var Table = (_temp2 = _class = function (_PureComponent) {
                             }
                         }
                     }
-                    for (i = 0; i < bodyRows.length; i++) {
-                        bodyCell = _helper2.default.getSubElements(bodyRows[i], '.' + _index2.default.td);
-                        sumCellWidth = 0;
-                        nonCustomColumnsIndex = [];
-                        for (j = 0; j < bodyCell.length; j++) {
-                            customColumn = newColumns[j];
-                            td = bodyCell[j];
-                            if (customColumn && customColumn.width) {
-                                cellsWidth[j] = customColumn.width;
-                            } else if (justified) {
-                                cellsWidth[j] = cellWidth;
-                            } else {
-                                thWidth = thsWidth[j] || 0;
-                                tdWidth = td.getBoundingClientRect().width;
-                                cellWidth = cellsWidth[j] || 0;
-                                cellsWidth[j] = Math.max(cellWidth, thWidth, tdWidth);
-                                nonCustomColumnsIndex.push(j);
-                            }
-                            sumCellWidth += cellsWidth[j];
-                        }
+                    // for (i = 0; i < bodyRows.length; i++) {
+                    //     bodyCell = helper.getSubElements(bodyRows[i], `.${styles.td}`);
+                    //     sumCellWidth = 0;
+                    //     nonCustomColumnsIndex = [];
+                    for (j = 0; j < bodyCell.length; j++) {
+                        //         customColumn = newColumns[j];
+                        //         td = bodyCell[j];
+                        //         if (customColumn && customColumn.width) {
+                        //             cellsWidth[j] = customColumn.width;
+                        //         } else if (justified) {
+                        //             cellsWidth[j] = cellWidth;
+                        //         } else {
+                        //             thWidth = thsWidth[j] || 0;
+                        //             tdWidth = td.getBoundingClientRect().width;
+                        //             cellWidth = cellsWidth[j] || 0;
+                        //             cellsWidth[j] = Math.max(cellWidth, thWidth, tdWidth);
+                        //             nonCustomColumnsIndex.push(j);
+                        //         }
+                        //         sumCellWidth += cellsWidth[j];
+                        cellsWidth[j] = 200;
                     }
+                    // }
                 } else {
                     // No data
                     var _j = 0;
-                    var _customColumn = void 0;
+                    var customColumn = void 0;
                     for (_j = 0; _j < newColumns.length; _j++) {
-                        _customColumn = newColumns[_j];
-                        if (_customColumn && _customColumn.width) {
-                            cellsWidth[_j] = _customColumn.width;
+                        customColumn = newColumns[_j];
+                        if (customColumn && customColumn.width) {
+                            cellsWidth[_j] = customColumn.width;
                         } else if (cellWidth > 0) {
                             cellsWidth[_j] = cellWidth;
                         } else {
                             cellsWidth[_j] = thsWidth[_j];
                             nonCustomColumnsIndex.push(_j);
                         }
-                        sumCellWidth += cellsWidth[_j];
+                        // sumCellWidth += cellsWidth[j];
                     }
                 }
 
-                if (tableMaxWidth > sumCellWidth) {
-                    var extra = tableMaxWidth - sumCellWidth;
-                    var extraCellWidth = void 0;
-                    if (nonCustomColumnsIndex.length > 0) {
-                        extraCellWidth = extra / (newColumns.length - customColumns.length);
-                        var _i = 0;
-                        for (_i = 0; _i < nonCustomColumnsIndex.length; _i++) {
-                            cellsWidth[nonCustomColumnsIndex[_i]] += extraCellWidth;
-                        }
-                    } else {
-                        extraCellWidth = extra / newColumns.length;
-                        var _i2 = 0;
-                        for (_i2 = 0; _i2 < newColumns.length; _i2++) {
-                            cellsWidth[_i2] += extraCellWidth;
-                        }
-                    }
-                }
+                // if (tableMaxWidth > sumCellWidth) {
+                //     const extra = tableMaxWidth - sumCellWidth;
+                //     let extraCellWidth;
+                //     if (nonCustomColumnsIndex.length > 0) {
+                //         extraCellWidth = extra / (newColumns.length - customColumns.length);
+                //         let i = 0;
+                //         for (i = 0; i < nonCustomColumnsIndex.length; i++) {
+                //             cellsWidth[nonCustomColumnsIndex[i]] += extraCellWidth;
+                //         }
+                //     } else {
+                //         extraCellWidth = extra / newColumns.length;
+                //         let i = 0;
+                //         for (i = 0; i < newColumns.length; i++) {
+                //             cellsWidth[i] += extraCellWidth;
+                //         }
+                //     }
+                // }
 
                 return cellsWidth;
             },
@@ -26456,23 +26534,27 @@ var Table = (_temp2 = _class = function (_PureComponent) {
                 var bodyRows = _helper2.default.getSubElements(tBody, '.' + _index2.default.tr);
                 var cellHeight = 0;
                 var rowsHeight = [];
-                var bodyCell = [];
-                var td = void 0;
-                var tdHeight = void 0;
-                var cellContent = void 0;
-                var content = void 0;
+                // let bodyCell = [];
+                // let td;
+                // let tdHeight;
+                // let cellContent;
+                // let content;
                 var i = 0;
-                var j = 0;
+                // let j = 0;
                 for (i = 0; i < bodyRows.length; i++) {
-                    bodyCell = _helper2.default.getSubElements(bodyRows[i], '.' + _index2.default.td);
-                    cellHeight = rowsHeight[i] || 0;
-                    for (j = 0; j < bodyCell.length; j++) {
-                        td = bodyCell[j];
-                        cellContent = _helper2.default.getSubElements(td, '.' + _index2.default.tdContent);
-                        content = cellContent[0];
-                        tdHeight = (content ? content.getBoundingClientRect().height : 0) + parseInt(_helper2.default.getElementStyle(td, 'padding-top'), 10) + parseInt(_helper2.default.getElementStyle(td, 'padding-bottom'), 10) + parseInt(_helper2.default.getElementStyle(td, 'border-top-width'), 10) + parseInt(_helper2.default.getElementStyle(td, 'border-bottom-width'), 10);
-                        cellHeight = Math.max(cellHeight, tdHeight);
-                    }
+                    // bodyCell = helper.getSubElements(bodyRows[i], `.${styles.td}`);
+                    cellHeight = rowsHeight[i] || 37;
+                    // for (j = 0; j < bodyCell.length; j++) {
+                    //     td = bodyCell[j];
+                    //     cellContent = helper.getSubElements(td, `.${styles.tdContent}`);
+                    //     content = cellContent[0];
+                    //     tdHeight = (content ? content.getBoundingClientRect().height : 0) +
+                    //                 parseInt(helper.getElementStyle(td, 'padding-top'), 10) +
+                    //                 parseInt(helper.getElementStyle(td, 'padding-bottom'), 10) +
+                    //                 parseInt(helper.getElementStyle(td, 'border-top-width'), 10) +
+                    //                 parseInt(helper.getElementStyle(td, 'border-bottom-width'), 10);
+                    //     cellHeight = Math.max(cellHeight, tdHeight);
+                    // }
                     rowsHeight[i] = cellHeight;
                 }
                 return rowsHeight;
@@ -26513,11 +26595,11 @@ var Table = (_temp2 = _class = function (_PureComponent) {
             },
             setMainTableHeaderCellWidth: function setMainTableHeaderCellWidth(cellsWidth) {
                 var tHeader = _this.mainTable.tableHeader.header;
-                var tBody = _this.mainTable.tableBody.body;
+                // const tBody = this.mainTable.tableBody.body;
                 var headerRows = _helper2.default.getSubElements(tHeader, '.' + _index2.default.tr);
-                var offsetWidth = tBody.getBoundingClientRect().width;
-                var clientWidth = tBody.clientWidth;
-                var scrollbarWidth = offsetWidth - clientWidth;
+                // const offsetWidth = tBody.getBoundingClientRect().width;
+                // const clientWidth = tBody.clientWidth;
+                // const scrollbarWidth = offsetWidth - clientWidth;
                 var totalWidth = void 0;
                 var i = void 0;
                 var j = void 0;
@@ -26528,9 +26610,9 @@ var Table = (_temp2 = _class = function (_PureComponent) {
                     totalWidth = 0;
                     for (j = 0; j < headerCells.length; j++) {
                         cellWidth = cellsWidth[j] || 0;
-                        if (j === headerCells.length - 1) {
-                            cellWidth += scrollbarWidth;
-                        }
+                        // if (j === headerCells.length - 1) {
+                        //     cellWidth += scrollbarWidth;
+                        // }
                         headerCells[j].style.width = cellWidth + 'px';
                         totalWidth += cellWidth;
                     }
@@ -26939,11 +27021,10 @@ var TableBody = (_temp = _class = function (_PureComponent) {
     }, {
         key: 'componentDidUpdate',
         value: function componentDidUpdate(prevProps, prevState) {
-            var scrollTop = this.props.scrollTop;
-
-            if (this.body.scrollTop !== scrollTop) {
-                this.body.scrollTop = scrollTop;
-            }
+            // const { scrollTop } = this.props;
+            // if (this.body.scrollTop !== scrollTop) {
+            //     this.body.scrollTop = scrollTop;
+            // }
         }
     }, {
         key: 'getRowKey',
@@ -27187,11 +27268,10 @@ var TableHeader = (_temp = _class = function (_Component) {
     _createClass(TableHeader, [{
         key: 'componentDidUpdate',
         value: function componentDidUpdate(prevProps, prevState) {
-            var scrollLeft = this.props.scrollLeft;
-
-            if (this.header.scrollLeft !== scrollLeft) {
-                this.header.scrollLeft = scrollLeft;
-            }
+            // const { scrollLeft } = this.props;
+            // if (this.header.scrollLeft !== scrollLeft) {
+            //     this.header.scrollLeft = scrollLeft;
+            // }
         }
     }, {
         key: 'shouldComponentUpdate',
@@ -27785,4 +27865,4 @@ exports.default = uniqueid;
 /***/ })
 
 /******/ });
-//# sourceMappingURL=bundle.js.map?3e1e045c9bde839e4671
+//# sourceMappingURL=bundle.js.map?891a4d8dcd88322fb81e

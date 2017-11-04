@@ -204,32 +204,32 @@ class Table extends PureComponent {
                 }
                 for (i = 0; i < headerCells.length; i++) {
                     th = headerCells[i];
-                    widthList[i] = th.getBoundingClientRect().width;
+                    widthList[i] = 250;
                 }
             }
             return widthList;
         },
         getMainTableHeaderCellActualHeight: () => {
-            const tHeader = this.mainTable.tableHeader.header;
-            const headerCells = helper.getSubElements(helper.getSubElements(tHeader, `.${styles.tr}`)[0], `.${styles.th}`);
-            let headerHeight = 0;
-            let th;
-            let thHeight;
-            let cellContent;
-            let content;
-            let i = 0;
-            for (i = 0; i < headerCells.length; i++) {
-                th = headerCells[i];
-                cellContent = helper.getSubElements(th, `.${styles.thContent}`);
-                content = cellContent[0];
-                thHeight = (content ? content.getBoundingClientRect().height : 0) +
-                            parseInt(helper.getElementStyle(th, 'padding-top'), 10) +
-                            parseInt(helper.getElementStyle(th, 'padding-bottom'), 10) +
-                            parseInt(helper.getElementStyle(th, 'border-top-width'), 10) +
-                            parseInt(helper.getElementStyle(th, 'border-bottom-width'), 10);
-                headerHeight = Math.max(headerHeight, thHeight);
-            }
-            return headerHeight;
+            // const tHeader = this.mainTable.tableHeader.header;
+            // const headerCells = helper.getSubElements(helper.getSubElements(tHeader, `.${styles.tr}`)[0], `.${styles.th}`);
+            // let headerHeight = 0;
+            // let th;
+            // let thHeight;
+            // let cellContent;
+            // let content;
+            // let i = 0;
+            // for (i = 0; i < headerCells.length; i++) {
+            //     th = headerCells[i];
+            //     cellContent = helper.getSubElements(th, `.${styles.thContent}`);
+            //     content = cellContent[0];
+            //     thHeight = (content ? content.getBoundingClientRect().height : 0) +
+            //                 parseInt(helper.getElementStyle(th, 'padding-top'), 10) +
+            //                 parseInt(helper.getElementStyle(th, 'padding-bottom'), 10) +
+            //                 parseInt(helper.getElementStyle(th, 'border-top-width'), 10) +
+            //                 parseInt(helper.getElementStyle(th, 'border-bottom-width'), 10);
+            //     headerHeight = Math.max(headerHeight, thHeight);
+            // }
+            return 37;
         },
         getMainTableCellWidth: () => {
             const {
@@ -243,9 +243,9 @@ class Table extends PureComponent {
             const mainBody = this.mainTable.tableBody;
             const tBody = mainBody.body;
             const bodyRows = helper.getSubElements(tBody, `.${styles.tr}`);
-            const tableMaxWidth = tBody.clientWidth;
+            const tableMaxWidth = 1000;
             const thsWidth = getMainTableHeaderCellActualWidth();
-            let sumCellWidth = 0;
+            // let sumCellWidth = 0;
             let cellsWidth = [];
             let cellWidth = 0;
             let customWidth = { width: 0 };
@@ -281,10 +281,10 @@ class Table extends PureComponent {
                 let i = 0;
                 let j = 0;
                 let bodyCell = [];
-                let customColumn;
+                // let customColumn;
                 let td;
-                let thWidth;
-                let tdWidth;
+                // let thWidth;
+                // let tdWidth;
                 // For performance, do not clearing element style and getting element width at the same time.
                 for (i = 0; i < bodyRows.length; i++) {
                     bodyCell = helper.getSubElements(bodyRows[i], `.${styles.td}`);
@@ -295,27 +295,28 @@ class Table extends PureComponent {
                         }
                     }
                 }
-                for (i = 0; i < bodyRows.length; i++) {
-                    bodyCell = helper.getSubElements(bodyRows[i], `.${styles.td}`);
-                    sumCellWidth = 0;
-                    nonCustomColumnsIndex = [];
-                    for (j = 0; j < bodyCell.length; j++) {
-                        customColumn = newColumns[j];
-                        td = bodyCell[j];
-                        if (customColumn && customColumn.width) {
-                            cellsWidth[j] = customColumn.width;
-                        } else if (justified) {
-                            cellsWidth[j] = cellWidth;
-                        } else {
-                            thWidth = thsWidth[j] || 0;
-                            tdWidth = td.getBoundingClientRect().width;
-                            cellWidth = cellsWidth[j] || 0;
-                            cellsWidth[j] = Math.max(cellWidth, thWidth, tdWidth);
-                            nonCustomColumnsIndex.push(j);
-                        }
-                        sumCellWidth += cellsWidth[j];
-                    }
+                // for (i = 0; i < bodyRows.length; i++) {
+                //     bodyCell = helper.getSubElements(bodyRows[i], `.${styles.td}`);
+                //     sumCellWidth = 0;
+                //     nonCustomColumnsIndex = [];
+                for (j = 0; j < bodyCell.length; j++) {
+                //         customColumn = newColumns[j];
+                //         td = bodyCell[j];
+                //         if (customColumn && customColumn.width) {
+                //             cellsWidth[j] = customColumn.width;
+                //         } else if (justified) {
+                //             cellsWidth[j] = cellWidth;
+                //         } else {
+                //             thWidth = thsWidth[j] || 0;
+                //             tdWidth = td.getBoundingClientRect().width;
+                //             cellWidth = cellsWidth[j] || 0;
+                //             cellsWidth[j] = Math.max(cellWidth, thWidth, tdWidth);
+                //             nonCustomColumnsIndex.push(j);
+                //         }
+                //         sumCellWidth += cellsWidth[j];
+                    cellsWidth[j] = 200;
                 }
+                // }
             } else {
                 // No data
                 let j = 0;
@@ -330,27 +331,27 @@ class Table extends PureComponent {
                         cellsWidth[j] = thsWidth[j];
                         nonCustomColumnsIndex.push(j);
                     }
-                    sumCellWidth += cellsWidth[j];
+                    // sumCellWidth += cellsWidth[j];
                 }
             }
 
-            if (tableMaxWidth > sumCellWidth) {
-                const extra = tableMaxWidth - sumCellWidth;
-                let extraCellWidth;
-                if (nonCustomColumnsIndex.length > 0) {
-                    extraCellWidth = extra / (newColumns.length - customColumns.length);
-                    let i = 0;
-                    for (i = 0; i < nonCustomColumnsIndex.length; i++) {
-                        cellsWidth[nonCustomColumnsIndex[i]] += extraCellWidth;
-                    }
-                } else {
-                    extraCellWidth = extra / newColumns.length;
-                    let i = 0;
-                    for (i = 0; i < newColumns.length; i++) {
-                        cellsWidth[i] += extraCellWidth;
-                    }
-                }
-            }
+            // if (tableMaxWidth > sumCellWidth) {
+            //     const extra = tableMaxWidth - sumCellWidth;
+            //     let extraCellWidth;
+            //     if (nonCustomColumnsIndex.length > 0) {
+            //         extraCellWidth = extra / (newColumns.length - customColumns.length);
+            //         let i = 0;
+            //         for (i = 0; i < nonCustomColumnsIndex.length; i++) {
+            //             cellsWidth[nonCustomColumnsIndex[i]] += extraCellWidth;
+            //         }
+            //     } else {
+            //         extraCellWidth = extra / newColumns.length;
+            //         let i = 0;
+            //         for (i = 0; i < newColumns.length; i++) {
+            //             cellsWidth[i] += extraCellWidth;
+            //         }
+            //     }
+            // }
 
             return cellsWidth;
         },
@@ -359,27 +360,27 @@ class Table extends PureComponent {
             const bodyRows = helper.getSubElements(tBody, `.${styles.tr}`);
             let cellHeight = 0;
             let rowsHeight = [];
-            let bodyCell = [];
-            let td;
-            let tdHeight;
-            let cellContent;
-            let content;
+            // let bodyCell = [];
+            // let td;
+            // let tdHeight;
+            // let cellContent;
+            // let content;
             let i = 0;
-            let j = 0;
+            // let j = 0;
             for (i = 0; i < bodyRows.length; i++) {
-                bodyCell = helper.getSubElements(bodyRows[i], `.${styles.td}`);
-                cellHeight = rowsHeight[i] || 0;
-                for (j = 0; j < bodyCell.length; j++) {
-                    td = bodyCell[j];
-                    cellContent = helper.getSubElements(td, `.${styles.tdContent}`);
-                    content = cellContent[0];
-                    tdHeight = (content ? content.getBoundingClientRect().height : 0) +
-                                parseInt(helper.getElementStyle(td, 'padding-top'), 10) +
-                                parseInt(helper.getElementStyle(td, 'padding-bottom'), 10) +
-                                parseInt(helper.getElementStyle(td, 'border-top-width'), 10) +
-                                parseInt(helper.getElementStyle(td, 'border-bottom-width'), 10);
-                    cellHeight = Math.max(cellHeight, tdHeight);
-                }
+                // bodyCell = helper.getSubElements(bodyRows[i], `.${styles.td}`);
+                cellHeight = rowsHeight[i] || 37;
+                // for (j = 0; j < bodyCell.length; j++) {
+                //     td = bodyCell[j];
+                //     cellContent = helper.getSubElements(td, `.${styles.tdContent}`);
+                //     content = cellContent[0];
+                //     tdHeight = (content ? content.getBoundingClientRect().height : 0) +
+                //                 parseInt(helper.getElementStyle(td, 'padding-top'), 10) +
+                //                 parseInt(helper.getElementStyle(td, 'padding-bottom'), 10) +
+                //                 parseInt(helper.getElementStyle(td, 'border-top-width'), 10) +
+                //                 parseInt(helper.getElementStyle(td, 'border-bottom-width'), 10);
+                //     cellHeight = Math.max(cellHeight, tdHeight);
+                // }
                 rowsHeight[i] = cellHeight;
             }
             return rowsHeight;
@@ -420,11 +421,11 @@ class Table extends PureComponent {
         },
         setMainTableHeaderCellWidth: (cellsWidth) => {
             const tHeader = this.mainTable.tableHeader.header;
-            const tBody = this.mainTable.tableBody.body;
+            // const tBody = this.mainTable.tableBody.body;
             const headerRows = helper.getSubElements(tHeader, `.${styles.tr}`);
-            const offsetWidth = tBody.getBoundingClientRect().width;
-            const clientWidth = tBody.clientWidth;
-            const scrollbarWidth = offsetWidth - clientWidth;
+            // const offsetWidth = tBody.getBoundingClientRect().width;
+            // const clientWidth = tBody.clientWidth;
+            // const scrollbarWidth = offsetWidth - clientWidth;
             let totalWidth;
             let i;
             let j;
@@ -435,9 +436,9 @@ class Table extends PureComponent {
                 totalWidth = 0;
                 for (j = 0; j < headerCells.length; j++) {
                     cellWidth = cellsWidth[j] || 0;
-                    if (j === headerCells.length - 1) {
-                        cellWidth += scrollbarWidth;
-                    }
+                    // if (j === headerCells.length - 1) {
+                    //     cellWidth += scrollbarWidth;
+                    // }
                     headerCells[j].style.width = `${cellWidth}px`;
                     totalWidth += cellWidth;
                 }
